@@ -66,11 +66,14 @@ pipeline {
                        git config --global user.email "bhaleraokedar.17@gmail.com"
                        git add deployment.yaml
                        git commit -m "New deployment file"
-                       git branch -M main
 
                        """
                     withCredentials([gitUsernamePassword(credentialsId: 'github-argocd', gitToolName: 'Default')]) {
-                        sh "git push -u origin main"
+                        sh """
+                            git branch 
+                            git push -u origin HEAD:main
+
+                           """
                     }
                 }
             }
