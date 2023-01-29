@@ -31,5 +31,31 @@ pipeline {
                 }
             }
         }
+        stage("Push image to dockerhub registry"){
+            steps{
+                script{
+                    withDockerRegistry(credentialsId: 'dockerhub') {
+                        docker_image.push()
+                        docker_image.push('latest')
+                    }
+                }
+            }
+        }
+        stage("Delete Docker Images"){
+            steps{
+                sh "docker rmi -f ${IMAGE_NAME}"
+            }
+        }
+        stage("Updating Kubernetes deployment"){
+            steps{
+                script{
+                    sh """
+                        cat deployment.yaml
+                        sed -i 's/${APP_NAME}.*/${IMAGE_TAG}/g' deployment.yaml
+                        cat deployment.yaml
+                       """
+                }
+            }
+        }
     }
 }
